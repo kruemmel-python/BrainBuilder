@@ -1,4 +1,4 @@
-# Modulares und Erweiterbares Neuronales Netzwerk in Python
+# Modulares und Erweiterbares Neuronales Netzwerk zur Brustkrebs-Erkennung in Python
 
 Ein leistungsfähiges, modulares und erweiterbares neuronales Netzwerk, implementiert in Python. Dieses Projekt bietet umfassende Werkzeuge zur Erstellung, Schulung und Evaluierung von neuronalen Netzwerken mit verschiedenen Optimierungsalgorithmen und Aktivierungsfunktionen. Es umfasst Funktionen zur Datenverarbeitung, Visualisierung sowie umfangreiche Unit-Tests zur Sicherstellung der Funktionalität.
 
@@ -25,7 +25,9 @@ Ein leistungsfähiges, modulares und erweiterbares neuronales Netzwerk, implemen
 
 ## Einführung
 
-Dieses Projekt implementiert ein modulares und erweiterbares neuronales Netzwerk in Python. Neuronale Netzwerke sind eine Art von maschinellem Lernen, das darauf abzielt, Muster in Daten zu erkennen und Vorhersagen zu treffen. In diesem spezifischen Projekt wird das Netzwerk zur Vorhersage von Brustkrebs eingesetzt, basierend auf dem **Breast Cancer Wisconsin (Diagnostic) Datensatz** von scikit-learn. Das Netzwerk eignet sich sowohl für Klassifikations- als auch für Regressionsaufgaben und bietet verschiedene Optimierungsalgorithmen und Aktivierungsfunktionen, um unterschiedliche Anforderungen zu erfüllen.
+Die frühzeitige Erkennung von Brustkrebs erhöht erheblich die Chancen auf eine erfolgreiche Behandlung und das Überleben der Patienten. Dieses Projekt nutzt die Leistungsfähigkeit neuronaler Netzwerke, um ein KI-Modell zu erstellen, das speziell darauf trainiert ist, Brustkrebs anhand des **Breast Cancer Wisconsin (Diagnostic) Datensatzes** von scikit-learn zu erkennen. Durch die Analyse verschiedener Merkmale, die aus Zellkernen von Brusttumorproben extrahiert wurden, lernt das neuronale Netzwerk, zwischen bösartigen und gutartigen Tumoren zu unterscheiden.
+
+Das Hauptziel dieses Projekts ist die Entwicklung eines zuverlässigen und effizienten KI-Werkzeugs, das medizinische Fachkräfte bei der Diagnose von Brustkrebs unterstützt, die diagnostische Genauigkeit verbessert und eine rechtzeitige Intervention erleichtert. Die modulare und erweiterbare Architektur des Netzwerks ermöglicht Flexibilität bei der Experimentierung mit verschiedenen Konfigurationen, Optimierungsalgorithmen und Aktivierungsfunktionen, was es zu einer wertvollen Ressource sowohl für Lernende als auch für Entwickler im Bereich des maschinellen Lernens und der medizinischen Diagnostik macht.
 
 ## Features
 
@@ -34,7 +36,7 @@ Dieses Projekt implementiert ein modulares und erweiterbares neuronales Netzwerk
 - **Verschiedene Aktivierungsfunktionen**: Sigmoid, ReLU und Softmax.
 - **Datenverarbeitung**: Laden von Daten aus CSV-Dateien, Skalierung, One-Hot-Encoding und Umgang mit fehlenden Werten.
 - **Visualisierung**: Darstellung der Netzwerkarchitektur, Trainingsverlauf und Konfusionsmatrix.
-- **Speicherung und Laden**: Netzwerke können als JSON oder Pickle gespeichert und geladen werden.
+- **Speicherung und Laden**: Netzwerke können als JSON oder Pickle-Dateien gespeichert und geladen werden.
 - **Trials**: Durchführung mehrerer Trainingsläufe mit unterschiedlichen Hyperparametern zur Optimierung der Leistung.
 - **Frühes Stoppen**: Automatisches Stoppen des Trainings bei Stagnation der Verlustfunktion.
 - **Umfassende Unit-Tests**: Sicherstellung der Funktionalität und Stabilität des Netzwerks.
@@ -65,6 +67,8 @@ Dieses Projekt verwendet den **Breast Cancer Wisconsin (Diagnostic) Datensatz** 
 
 #### Datensatz erstellen und als CSV speichern
 
+Der Datensatz wird geladen und als CSV-Datei gespeichert, um die Nutzung und Verarbeitung zu erleichtern.
+
 ```python
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
@@ -81,7 +85,7 @@ data['target'] = breast_cancer.target
 # Anzeige der ersten paar Zeilen des DataFrame
 print(data.head())
 
-# Optional: Speichern des Datensatzes als CSV
+# Speichern des Datensatzes als CSV-Datei
 data.to_csv("breast_cancer.csv", index=False)
 ```
 
@@ -101,6 +105,14 @@ X_train, X_test, y_train, y_test = load_data_from_csv(
 )
 ```
 
+**Was das Netzwerk mit den Daten macht:**
+
+- **Datenladen**: Das Netzwerk liest die CSV-Datei, die die Brustkrebsdaten enthält.
+- **Datenvorverarbeitung**: Die Merkmale werden mithilfe von Min-Max-Skalierung normalisiert, um die Eingabedaten zu standardisieren.
+- **Training**: Das neuronale Netzwerk wird mit dem Trainingssatz trainiert, um Muster zu erkennen, die bösartige von gutartigen Tumoren unterscheiden.
+- **Vorhersage**: Nach dem Training kann das Netzwerk die Wahrscheinlichkeit vorhersagen, ob ein Tumor bösartig oder gutartig ist, basierend auf den Eingabemerkmalen.
+- **Evaluation**: Die Leistung des Netzwerks wird mithilfe von Metriken wie Genauigkeit, mittlerer quadratischer Fehler (MSE), mittlerer absoluter Fehler (MAE) und R²-Score bewertet.
+
 ### Netzwerk initialisieren
 
 Initialisieren Sie das Netzwerk, indem Sie die Struktur und Hyperparameter definieren.
@@ -109,7 +121,7 @@ Initialisieren Sie das Netzwerk, indem Sie die Struktur und Hyperparameter defin
 from your_module import Network
 
 num_nodes = [X_train.shape[1], 20, 1]  # Eingabe, versteckte Schicht, Ausgabe
-netzwerk = Network(
+network = Network(
     num_nodes=num_nodes,
     V_max=1.0,
     R_harmony=0.8,
@@ -117,7 +129,7 @@ netzwerk = Network(
     learning_rate=0.01,
     momentum=0.9,
     output_activation='sigmoid',
-    optimizer_method='SGD'
+    optimizer_method='Adam'
 )
 ```
 
@@ -126,7 +138,7 @@ netzwerk = Network(
 Trainieren Sie das Netzwerk mit den Trainingsdaten.
 
 ```python
-history = netzwerk.train(
+history = network.train(
     X_train,
     y_train,
     epochs=100,  # Anzahl der vollständigen Durchläufe durch die Trainingsdaten
@@ -144,7 +156,7 @@ history = netzwerk.train(
 Verwenden Sie das trainierte Netzwerk, um Vorhersagen zu treffen.
 
 ```python
-vorhersagen = netzwerk.predict(X_test)
+predictions = network.predict(X_test)
 ```
 
 ### Speichern und Laden des Netzwerks
@@ -152,7 +164,7 @@ vorhersagen = netzwerk.predict(X_test)
 #### Speichern als Pickle
 
 ```python
-netzwerk.save_network('netzwerk.pkl')
+network.save_network('network.pkl')
 ```
 
 #### Laden aus Pickle
@@ -160,19 +172,19 @@ netzwerk.save_network('netzwerk.pkl')
 ```python
 from your_module import Network
 
-geladenes_netzwerk = Network.load_network('netzwerk.pkl')
+loaded_network = Network.load_network('network.pkl')
 ```
 
 #### Speichern als JSON
 
 ```python
-netzwerk.to_json('netzwerk.json')
+network.to_json('network.json')
 ```
 
 #### Laden aus JSON
 
 ```python
-geladenes_netzwerk = Network.from_json('netzwerk.json')
+loaded_network = Network.from_json('network.json')
 ```
 
 ### Visualisierung
@@ -180,19 +192,19 @@ geladenes_netzwerk = Network.from_json('netzwerk.json')
 #### Netzwerkarchitektur visualisieren
 
 ```python
-netzwerk.visualize()
+network.visualize()
 ```
 
 #### Trainingsverlauf plotten
 
 ```python
-netzwerk.plot_training_history(history)
+network.plot_training_history(history)
 ```
 
 #### Konfusionsmatrix erstellen (bei Klassifikation)
 
 ```python
-netzwerk.plot_confusion_matrix(list(zip(X_test, y_test)))
+network.plot_confusion_matrix(list(zip(X_test, y_test)))
 ```
 
 ### Durchführen von Trials
@@ -200,7 +212,7 @@ netzwerk.plot_confusion_matrix(list(zip(X_test, y_test)))
 Führen Sie mehrere Trainingsläufe mit unterschiedlichen Hyperparametern durch, um die besten Einstellungen zu finden.
 
 ```python
-netzwerk.run_trials(
+network.run_trials(
     X_train, y_train,
     X_test, y_test,
     num_trials=5,
@@ -217,7 +229,7 @@ netzwerk.run_trials(
 Speichern Sie die Ergebnisse der Trials als CSV:
 
 ```python
-netzwerk.save_trial_results('trial_ergebnisse.csv')
+network.save_trial_results('trial_results.csv')
 ```
 
 ## Optimierer
@@ -233,7 +245,7 @@ Das Netzwerk unterstützt verschiedene Optimierungsalgorithmen, die die Gewichte
 Beim Initialisieren des Netzwerks können Sie den gewünschten Optimierer wählen:
 
 ```python
-netzwerk = Network(
+network = Network(
     num_nodes=num_nodes,
     optimizer_method='Adam',
     learning_rate=0.001
@@ -253,7 +265,7 @@ Das Netzwerk bietet verschiedene Aktivierungsfunktionen zur Einführung von Nich
 Beim Initialisieren des Netzwerks können Sie die gewünschte Aktivierungsfunktion wählen:
 
 ```python
-netzwerk = Network(
+network = Network(
     activation_function='relu',
     output_activation='softmax'
 )
@@ -283,15 +295,17 @@ Die Tests decken verschiedene Aspekte ab, einschließlich:
 
 ## Beispielprojekt: Klassifikation des Breast Cancer Datensatzes
 
-Hier zeigen wir ein einfaches Beispiel, wie das Netzwerk zur Klassifikation des **Breast Cancer Wisconsin (Diagnostic) Datensatzes** verwendet werden kann.
+Dieses Beispiel demonstriert, wie das neuronale Netzwerk verwendet wird, um ein KI-Modell zu trainieren, das Brustkrebs erkennt. Der Datensatz wird aus einer CSV-Datei geladen, das Netzwerk wird initialisiert und trainiert, und das Modell wird zur Vorhersage und Bewertung verwendet. Anschließend wird das trainierte Modell gespeichert.
 
 ### Schritt 1: Datensatz erstellen und laden
+
+Zuerst wird der Breast Cancer Datensatz aus scikit-learn geladen, in eine CSV-Datei konvertiert und dann in das neuronale Netzwerk geladen.
 
 ```python
 import pandas as pd
 from your_module import load_data_from_csv
 
-# Laden des Breast Cancer Datensatzes und Speichern als CSV
+# Laden des Breast Cancer Datensatzes und Speichern als CSV-Datei
 from sklearn.datasets import load_breast_cancer
 
 breast_cancer = load_breast_cancer()
@@ -299,7 +313,7 @@ data = pd.DataFrame(breast_cancer.data, columns=breast_cancer.feature_names)
 data['target'] = breast_cancer.target
 data.to_csv("breast_cancer.csv", index=False)
 
-# Daten laden und vorbereiten
+# Laden und Vorbereiten der Daten
 X_train, X_test, y_train, y_test = load_data_from_csv(
     filepath='breast_cancer.csv',
     target_column='target',
@@ -311,11 +325,13 @@ X_train, X_test, y_train, y_test = load_data_from_csv(
 
 ### Schritt 2: Netzwerk initialisieren
 
+Initialisieren Sie das neuronale Netzwerk mit der gewünschten Architektur und den Hyperparametern.
+
 ```python
 from your_module import Network
 
 num_nodes = [X_train.shape[1], 20, 1]  # Eingabe, versteckte Schicht, Ausgabe
-netzwerk = Network(
+network = Network(
     num_nodes=num_nodes,
     V_max=1.0,
     R_harmony=0.8,
@@ -329,8 +345,10 @@ netzwerk = Network(
 
 ### Schritt 3: Training
 
+Trainieren Sie das neuronale Netzwerk mit den Trainingsdaten.
+
 ```python
-history = netzwerk.train(
+history = network.train(
     X_train,
     y_train,
     epochs=100,
@@ -343,32 +361,44 @@ history = netzwerk.train(
 
 ### Schritt 4: Vorhersagen treffen und Evaluation
 
+Nach dem Training verwenden Sie das Netzwerk, um Vorhersagen auf dem Testsatz zu treffen und die Leistung zu bewerten.
+
 ```python
-vorhersagen = netzwerk.predict(X_test)
-metriken = netzwerk.test_network(list(zip(X_test, y_test)))
-print(metriken)
+predictions = network.predict(X_test)
+metrics = network.test_network(list(zip(X_test, y_test)))
+print(metrics)
 ```
 
 ### Schritt 5: Visualisierung
 
-```python
-netzwerk.plot_training_history(history)
-netzwerk.plot_confusion_matrix(list(zip(X_test, y_test)))
-```
-
-### Schritt 6: Netzwerk speichern und laden
+Visualisieren Sie den Trainingsverlauf und die Konfusionsmatrix, um die Leistung des Netzwerks besser zu verstehen.
 
 ```python
-# Speichern
-netzwerk.save_network('breast_cancer_netzwerk.pkl')
-netzwerk.to_json('breast_cancer_netzwerk.json')
-
-# Laden
-geladenes_netzwerk = Network.load_network('breast_cancer_netzwerk.pkl')
-geladenes_netzwerk_json = Network.from_json('breast_cancer_netzwerk.json')
+network.plot_training_history(history)
+network.plot_confusion_matrix(list(zip(X_test, y_test)))
 ```
 
-Dieses Beispiel führt Sie durch den gesamten Prozess der Datenvorbereitung, Netzwerkinitialisierung, des Trainings, der Vorhersage, der Evaluation und der Speicherung des Netzwerks. Es bietet einen praktischen Einstieg und erleichtert das Verständnis der einzelnen Schritte.
+### Schritt 6: Speichern und Laden des Netzwerks
+
+Speichern Sie das trainierte Netzwerk für die zukünftige Nutzung und laden Sie es bei Bedarf wieder.
+
+```python
+# Speichern des Netzwerks
+network.save_network('breast_cancer_network.pkl')
+network.to_json('breast_cancer_network.json')
+
+# Laden des Netzwerks
+loaded_network = Network.load_network('breast_cancer_network.pkl')
+loaded_network_json = Network.from_json('breast_cancer_network.json')
+```
+
+**Was das Netzwerk lernt:**
+
+Das neuronale Netzwerk lernt, Muster in den Merkmalen der Brusttumorproben zu erkennen, die auf eine Bösartigkeit oder Gutartigkeit des Tumors hinweisen. Durch das Training mit dem Datensatz passt das Modell seine Gewichte und Biases an, um die Verlustfunktion zu minimieren und dadurch genauere Vorhersagen auf unbekannten Daten zu ermöglichen.
+
+**Speichern des Modells:**
+
+Nach dem Training wird das Modell sowohl im Pickle- als auch im JSON-Format gespeichert. Dies ermöglicht eine einfache Speicherung und Wiederverwendung des trainierten Modells für zukünftige Vorhersagen, ohne dass eine erneute Schulung erforderlich ist.
 
 ## Lizenz
 
