@@ -9,7 +9,7 @@ A powerful, modular, and extensible neural network implemented in Python. This p
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Loading Data](#loading-data)
+  - [Creating and Loading the Dataset](#creating-and-loading-the-dataset)
   - [Initializing the Network](#initializing-the-network)
   - [Training](#training)
   - [Making Predictions](#making-predictions)
@@ -20,12 +20,12 @@ A powerful, modular, and extensible neural network implemented in Python. This p
 - [Activation Functions](#activation-functions)
 - [Glossary](#glossary)
 - [Unit Tests](#unit-tests)
-- [Example Project: Iris Dataset Classification](#example-project-iris-dataset-classification)
+- [Example Project: Breast Cancer Dataset Classification](#example-project-breast-cancer-dataset-classification)
 - [License](#license)
 
 ## Introduction
 
-This project implements a modular and extensible neural network in Python. Neural networks are a type of machine learning designed to recognize patterns in data and make predictions. This network is suitable for both classification and regression tasks and offers various optimization algorithms and activation functions to meet different requirements.
+This project implements a modular and extensible neural network in Python. Neural networks are a type of machine learning designed to recognize patterns in data and make predictions. In this specific project, the network is used to predict breast cancer based on the **Breast Cancer Wisconsin (Diagnostic) Dataset** from scikit-learn. The network is suitable for both classification and regression tasks and offers various optimization algorithms and activation functions to meet different requirements.
 
 ## Features
 
@@ -59,15 +59,41 @@ The `unittest` module is used for unit tests and is included with Python by defa
 
 ## Usage
 
-### Loading Data
+### Creating and Loading the Dataset
 
-Use the `load_data_from_csv` function to load data from a CSV file and split it into training and testing sets.
+This project uses the **Breast Cancer Wisconsin (Diagnostic) Dataset** from scikit-learn. The dataset contains features of cell nuclei extracted from breast tumor samples, along with the target variable indicating whether the tumor is malignant (1) or benign (0).
+
+#### Creating and Saving the Dataset as CSV
+
+```python
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+
+# Load the Breast Cancer dataset from sklearn
+breast_cancer = load_breast_cancer()
+
+# Convert the dataset to a Pandas DataFrame
+data = pd.DataFrame(breast_cancer.data, columns=breast_cancer.feature_names)
+
+# Add the target variable (class label)
+data['target'] = breast_cancer.target
+
+# Display the first few rows of the DataFrame
+print(data.head())
+
+# Optional: Save the dataset as a CSV file
+data.to_csv("breast_cancer.csv", index=False)
+```
+
+#### Loading and Preparing the Data
+
+Use the `load_data_from_csv` function to load the saved dataset, scale the features, and split the dataset into training and testing sets.
 
 ```python
 from your_module import load_data_from_csv
 
 X_train, X_test, y_train, y_test = load_data_from_csv(
-    filepath='data.csv',
+    filepath='breast_cancer.csv',
     target_column='target',
     test_size=0.2,
     random_state=42,
@@ -91,7 +117,7 @@ network = Network(
     learning_rate=0.01,
     momentum=0.9,
     output_activation='sigmoid',
-    optimizer_method='SGD'
+    optimizer_method='Adam'
 )
 ```
 
@@ -107,7 +133,7 @@ history = network.train(
     batch_size=32,  # Number of samples processed before updating the model
     use_backpropagation=True,  # Use the backpropagation algorithm to compute gradients
     learning_rate_decay=True,  # Adjust the learning rate during training
-    early_stopping_patience=10  # Stop training if loss does not improve for 10 epochs
+    early_stopping_patience=10  # Early stopping if loss does not improve for 10 epochs
 )
 ```
 
@@ -255,27 +281,28 @@ The tests cover various aspects, including:
 - Saving and loading the network as JSON and Pickle
 - Running trials
 
-## Example Project: Iris Dataset Classification
+## Example Project: Breast Cancer Dataset Classification
 
-Here is a simple example of how to use the network for classifying the Iris dataset.
+Here is a simple example of how to use the network for classifying the **Breast Cancer Wisconsin (Diagnostic) Dataset**.
 
-### Step 1: Loading Data
+### Step 1: Creating and Loading the Dataset
 
 ```python
-from your_module import load_data_from_csv
-from sklearn.datasets import load_iris
 import pandas as pd
+from your_module import load_data_from_csv
 
-# Load the Iris dataset and save it as a CSV file
-iris = load_iris()
-df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
-df['species'] = iris.target
-df.to_csv('iris.csv', index=False)
+# Load the Breast Cancer dataset and save it as a CSV file
+from sklearn.datasets import load_breast_cancer
 
-# Load the data
+breast_cancer = load_breast_cancer()
+data = pd.DataFrame(breast_cancer.data, columns=breast_cancer.feature_names)
+data['target'] = breast_cancer.target
+data.to_csv("breast_cancer.csv", index=False)
+
+# Load and prepare the data
 X_train, X_test, y_train, y_test = load_data_from_csv(
-    filepath='iris.csv',
-    target_column='species',
+    filepath='breast_cancer.csv',
+    target_column='target',
     test_size=0.2,
     random_state=42,
     scale_features=True
@@ -287,7 +314,7 @@ X_train, X_test, y_train, y_test = load_data_from_csv(
 ```python
 from your_module import Network
 
-num_nodes = [X_train.shape[1], 10, 3]  # Input, Hidden Layer, Output
+num_nodes = [X_train.shape[1], 20, 1]  # Input, Hidden Layer, Output
 network = Network(
     num_nodes=num_nodes,
     V_max=1.0,
@@ -295,7 +322,7 @@ network = Network(
     activation_function='relu',
     learning_rate=0.01,
     momentum=0.9,
-    output_activation='softmax',
+    output_activation='sigmoid',
     optimizer_method='Adam'
 )
 ```
@@ -306,11 +333,11 @@ network = Network(
 history = network.train(
     X_train,
     y_train,
-    epochs=50,
-    batch_size=16,
+    epochs=100,
+    batch_size=32,
     use_backpropagation=True,
     learning_rate_decay=True,
-    early_stopping_patience=5
+    early_stopping_patience=10
 )
 ```
 
@@ -333,12 +360,12 @@ network.plot_confusion_matrix(list(zip(X_test, y_test)))
 
 ```python
 # Saving
-network.save_network('iris_network.pkl')
-network.to_json('iris_network.json')
+network.save_network('breast_cancer_network.pkl')
+network.to_json('breast_cancer_network.json')
 
 # Loading
-loaded_network = Network.load_network('iris_network.pkl')
-loaded_network_json = Network.from_json('iris_network.json')
+loaded_network = Network.load_network('breast_cancer_network.pkl')
+loaded_network_json = Network.from_json('breast_cancer_network.json')
 ```
 
 This example walks you through the entire process of data preparation, network initialization, training, making predictions, evaluation, and saving the network. It provides a practical introduction and facilitates understanding of each step.
