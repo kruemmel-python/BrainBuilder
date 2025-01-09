@@ -9,7 +9,7 @@ Ein leistungsfähiges, modulares und erweiterbares neuronales Netzwerk, implemen
 - [Voraussetzungen](#voraussetzungen)
 - [Installation](#installation)
 - [Verwendung](#verwendung)
-  - [Daten laden](#daten-laden)
+  - [Datensatz erstellen und laden](#datensatz-erstellen-und-laden)
   - [Netzwerk initialisieren](#netzwerk-initialisieren)
   - [Training](#training)
   - [Vorhersagen treffen](#vorhersagen-treffen)
@@ -20,16 +20,16 @@ Ein leistungsfähiges, modulares und erweiterbares neuronales Netzwerk, implemen
 - [Aktivierungsfunktionen](#aktivierungsfunktionen)
 - [Glossar](#glossar)
 - [Unit-Tests](#unit-tests)
-- [Beispielprojekt: Klassifikation des Iris-Datensatzes](#beispielprojekt-klassifikation-des-iris-datensatzes)
+- [Beispielprojekt: Klassifikation des Breast Cancer Datensatzes](#beispielprojekt-klassifikation-des-breast-cancer-datensatzes)
 - [Lizenz](#lizenz)
 
 ## Einführung
 
-Dieses Projekt implementiert ein modulares und erweiterbares neuronales Netzwerk in Python. Neuronale Netzwerke sind eine Art von maschinellem Lernen, das darauf abzielt, Muster in Daten zu erkennen und Vorhersagen zu treffen. Dieses Netzwerk eignet sich sowohl für Klassifikations- als auch für Regressionsaufgaben und bietet verschiedene Optimierungsalgorithmen und Aktivierungsfunktionen, um unterschiedliche Anforderungen zu erfüllen.
+Dieses Projekt implementiert ein modulares und erweiterbares neuronales Netzwerk in Python. Neuronale Netzwerke sind eine Art von maschinellem Lernen, das darauf abzielt, Muster in Daten zu erkennen und Vorhersagen zu treffen. In diesem spezifischen Projekt wird das Netzwerk zur Vorhersage von Brustkrebs eingesetzt, basierend auf dem **Breast Cancer Wisconsin (Diagnostic) Datensatz** von scikit-learn. Das Netzwerk eignet sich sowohl für Klassifikations- als auch für Regressionsaufgaben und bietet verschiedene Optimierungsalgorithmen und Aktivierungsfunktionen, um unterschiedliche Anforderungen zu erfüllen.
 
 ## Features
 
-- **Modulare Architektur**: Definieren Sie die Anzahl der Schichten und Neuronen pro Schicht flexibel.
+- **Modulare Architektur**: Flexibel definierbare Anzahl der Schichten und Neuronen pro Schicht.
 - **Verschiedene Optimierer**: Unterstützung für SGD (mit Momentum), Adam und RMSprop.
 - **Verschiedene Aktivierungsfunktionen**: Sigmoid, ReLU und Softmax.
 - **Datenverarbeitung**: Laden von Daten aus CSV-Dateien, Skalierung, One-Hot-Encoding und Umgang mit fehlenden Werten.
@@ -59,16 +59,42 @@ Für die Unit-Tests wird das `unittest`-Modul verwendet, das standardmäßig mit
 
 ## Verwendung
 
-### Daten laden
+### Datensatz erstellen und laden
 
-Verwenden Sie die Funktion `load_data_from_csv`, um Daten aus einer CSV-Datei zu laden und in Trainings- und Testsets aufzuteilen.
+Dieses Projekt verwendet den **Breast Cancer Wisconsin (Diagnostic) Datensatz** aus scikit-learn. Der Datensatz enthält Merkmale von Zellkernen, die aus Brusttumorproben extrahiert wurden, sowie die Zielvariable, die angibt, ob der Tumor bösartig (1) oder gutartig (0) ist.
+
+#### Datensatz erstellen und als CSV speichern
+
+```python
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+
+# Laden des Breast Cancer Datensatzes aus sklearn
+breast_cancer = load_breast_cancer()
+
+# Umwandlung des Datensatzes in einen Pandas DataFrame
+data = pd.DataFrame(breast_cancer.data, columns=breast_cancer.feature_names)
+
+# Hinzufügen der Zielvariable (Klassenbezeichnung)
+data['target'] = breast_cancer.target
+
+# Anzeige der ersten paar Zeilen des DataFrame
+print(data.head())
+
+# Optional: Speichern des Datensatzes als CSV
+data.to_csv("breast_cancer.csv", index=False)
+```
+
+#### Daten laden und vorbereiten
+
+Verwenden Sie die Funktion `load_data_from_csv`, um den gespeicherten Datensatz zu laden, die Merkmale zu skalieren und den Datensatz in Trainings- und Testsets aufzuteilen.
 
 ```python
 from your_module import load_data_from_csv
 
 X_train, X_test, y_train, y_test = load_data_from_csv(
-    filepath='daten.csv',
-    target_column='ziel',
+    filepath='breast_cancer.csv',
+    target_column='target',
     test_size=0.2,
     random_state=42,
     scale_features=True
@@ -198,9 +224,9 @@ netzwerk.save_trial_results('trial_ergebnisse.csv')
 
 Das Netzwerk unterstützt verschiedene Optimierungsalgorithmen, die die Gewichte und Biases während des Trainings aktualisieren:
 
-- **SGD (Stochastic Gradient Descent):** Mit Momentum zur Beschleunigung des Trainings.
-- **Adam:** Adaptive Moment Estimation, kombiniert Momentum und RMSprop.
-- **RMSprop:** Adaptive Lernraten, basierend auf den Mittelwerten der Quadrate der Gradienten.
+- **SGD (Stochastic Gradient Descent)**: Mit Momentum zur Beschleunigung des Trainings.
+- **Adam**: Adaptive Moment Estimation, kombiniert Momentum und RMSprop.
+- **RMSprop**: Adaptive Lernraten, basierend auf den Mittelwerten der Quadrate der Gradienten.
 
 ### Auswahl des Optimierers
 
@@ -218,9 +244,9 @@ netzwerk = Network(
 
 Das Netzwerk bietet verschiedene Aktivierungsfunktionen zur Einführung von Nichtlinearitäten:
 
-- **Sigmoid:** Für binäre Klassifikationsaufgaben geeignet.
-- **ReLU (Rectified Linear Unit):** Fördert schnelle Konvergenz und vermeidet das Vanishing-Gradient-Problem.
-- **Softmax:** Für mehrklassige Klassifikationsaufgaben geeignet.
+- **Sigmoid**: Für binäre Klassifikationsaufgaben geeignet.
+- **ReLU (Rectified Linear Unit)**: Fördert schnelle Konvergenz und vermeidet das Vanishing-Gradient-Problem.
+- **Softmax**: Für mehrklassige Klassifikationsaufgaben geeignet.
 
 ### Auswahl der Aktivierungsfunktion
 
@@ -235,10 +261,10 @@ netzwerk = Network(
 
 ## Glossar
 
-- **Optimizer (Optimierer):** Algorithmen, die die Gewichte und Biases eines neuronalen Netzwerks während des Trainings anpassen.
-- **Momentum:** Ein Parameter, der hilft, das Training zu beschleunigen und lokale Minima zu vermeiden, indem vergangene Gradienten berücksichtigt werden.
-- **Softmax:** Eine Aktivierungsfunktion, die die Ausgabe in Wahrscheinlichkeiten umwandelt, die sich zu 1 summieren, häufig verwendet in der Ausgabeschicht bei Mehrklassenklassifikation.
-- **One-Hot-Encoding:** Eine Methode zur Kodierung kategorialer Variablen, bei der jede Klasse als Vektor mit einer 1 an der Stelle der Klasse und 0en an allen anderen Stellen dargestellt wird.
+- **Optimizer (Optimierer)**: Algorithmen, die die Gewichte und Biases eines neuronalen Netzwerks während des Trainings anpassen.
+- **Momentum**: Ein Parameter, der hilft, das Training zu beschleunigen und lokale Minima zu vermeiden, indem vergangene Gradienten berücksichtigt werden.
+- **Softmax**: Eine Aktivierungsfunktion, die die Ausgabe in Wahrscheinlichkeiten umwandelt, die sich zu 1 summieren, häufig verwendet in der Ausgabeschicht bei Mehrklassenklassifikation.
+- **One-Hot Encoding**: Eine Methode zur Kodierung kategorialer Variablen, bei der jede Klasse als Vektor mit einer 1 an der Stelle der Klasse und 0en an allen anderen Stellen dargestellt wird.
 
 ## Unit-Tests
 
@@ -255,27 +281,28 @@ Die Tests decken verschiedene Aspekte ab, einschließlich:
 - Speichern und Laden des Netzwerks als JSON und Pickle
 - Durchführung von Trials
 
-## Beispielprojekt: Klassifikation des Iris-Datensatzes
+## Beispielprojekt: Klassifikation des Breast Cancer Datensatzes
 
-Hier zeigen wir ein einfaches Beispiel, wie das Netzwerk zur Klassifikation des Iris-Datensatzes verwendet werden kann.
+Hier zeigen wir ein einfaches Beispiel, wie das Netzwerk zur Klassifikation des **Breast Cancer Wisconsin (Diagnostic) Datensatzes** verwendet werden kann.
 
-### Schritt 1: Daten laden
+### Schritt 1: Datensatz erstellen und laden
 
 ```python
-from your_module import load_data_from_csv
-from sklearn.datasets import load_iris
 import pandas as pd
+from your_module import load_data_from_csv
 
-# Iris-Datensatz laden und als CSV speichern
-iris = load_iris()
-df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
-df['species'] = iris.target
-df.to_csv('iris.csv', index=False)
+# Laden des Breast Cancer Datensatzes und Speichern als CSV
+from sklearn.datasets import load_breast_cancer
 
-# Daten laden
+breast_cancer = load_breast_cancer()
+data = pd.DataFrame(breast_cancer.data, columns=breast_cancer.feature_names)
+data['target'] = breast_cancer.target
+data.to_csv("breast_cancer.csv", index=False)
+
+# Daten laden und vorbereiten
 X_train, X_test, y_train, y_test = load_data_from_csv(
-    filepath='iris.csv',
-    target_column='species',
+    filepath='breast_cancer.csv',
+    target_column='target',
     test_size=0.2,
     random_state=42,
     scale_features=True
@@ -287,7 +314,7 @@ X_train, X_test, y_train, y_test = load_data_from_csv(
 ```python
 from your_module import Network
 
-num_nodes = [X_train.shape[1], 10, 3]  # Eingabe, versteckte Schicht, Ausgabe
+num_nodes = [X_train.shape[1], 20, 1]  # Eingabe, versteckte Schicht, Ausgabe
 netzwerk = Network(
     num_nodes=num_nodes,
     V_max=1.0,
@@ -295,7 +322,7 @@ netzwerk = Network(
     activation_function='relu',
     learning_rate=0.01,
     momentum=0.9,
-    output_activation='softmax',
+    output_activation='sigmoid',
     optimizer_method='Adam'
 )
 ```
@@ -306,15 +333,15 @@ netzwerk = Network(
 history = netzwerk.train(
     X_train,
     y_train,
-    epochs=50,
-    batch_size=16,
+    epochs=100,
+    batch_size=32,
     use_backpropagation=True,
     learning_rate_decay=True,
-    early_stopping_patience=5
+    early_stopping_patience=10
 )
 ```
 
-### Schritt 4: Vorhersagen und Evaluation
+### Schritt 4: Vorhersagen treffen und Evaluation
 
 ```python
 vorhersagen = netzwerk.predict(X_test)
@@ -333,12 +360,12 @@ netzwerk.plot_confusion_matrix(list(zip(X_test, y_test)))
 
 ```python
 # Speichern
-netzwerk.save_network('iris_netzwerk.pkl')
-netzwerk.to_json('iris_netzwerk.json')
+netzwerk.save_network('breast_cancer_netzwerk.pkl')
+netzwerk.to_json('breast_cancer_netzwerk.json')
 
 # Laden
-geladenes_netzwerk = Network.load_network('iris_netzwerk.pkl')
-geladenes_netzwerk_json = Network.from_json('iris_netzwerk.json')
+geladenes_netzwerk = Network.load_network('breast_cancer_netzwerk.pkl')
+geladenes_netzwerk_json = Network.from_json('breast_cancer_netzwerk.json')
 ```
 
 Dieses Beispiel führt Sie durch den gesamten Prozess der Datenvorbereitung, Netzwerkinitialisierung, des Trainings, der Vorhersage, der Evaluation und der Speicherung des Netzwerks. Es bietet einen praktischen Einstieg und erleichtert das Verständnis der einzelnen Schritte.
